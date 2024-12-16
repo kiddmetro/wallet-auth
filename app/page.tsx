@@ -1,100 +1,199 @@
+"use client";
+
+import Head from "next/head";
 import Image from "next/image";
+import Link from "next/link";
+import { useUser } from "@auth0/nextjs-auth0/client";
+import { useState, useEffect } from "react";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const { user, isLoading } = useUser();
+  const [wallet, setWallet] = useState(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+
+  useEffect(() => {
+    if (user) {
+      const fetchWallet = async () => {
+        const response = await fetch("/api/createwallet", {
+          method: "GET",
+        });
+
+        // Check if the response is OK (status code 200)
+        if (response.ok) {
+          try {
+            const data = await response.json();
+            if (data.wallet) {
+              setWallet(data.wallet);
+            } else {
+              console.error("No wallet data received:", data);
+            }
+          } catch (error) {
+            console.error("Failed to parse JSON:", error);
+          }
+        } else {
+          console.error(
+            "Failed to fetch wallet. Status code:",
+            response.status
+          );
+        }
+      };
+
+      fetchWallet();
+    }
+  }, [user]);
+  return (
+    <div className="min-h-screen flex flex-col bg-gray-100">
+      <Head>
+        <title>Wallet Create Landing</title>
+        <meta
+          name="description"
+          content="Connect your wallet easily using new technology"
+        />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
+      {/* Header */}
+      <header className="bg-purple-600 text-white py-4 shadow-md">
+        <div className="container mx-auto px-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold">WalletAuth</h1>
+          <div>
+            {!isLoading && user && (
+              <Link
+                href="/api/auth/logout"
+                className="bg-white text-purple-600 px-3 py-1 rounded-md shadow hover:bg-gray-200"
+              >
+                Logout
+              </Link>
+            )}
+          </div>
+        </div>
+      </header>
+
+      {/* Navbar for logged-in users */}
+      {user && (
+        <nav className="bg-gray-800 text-white py-4">
+          <div className="container mx-auto px-4 flex justify-around">
+            <Link href="/send" className="flex items-center space-x-2">
+              <Image src="/send.svg" alt="Send Icon" width={24} height={24} />
+              <span>Send</span>
+            </Link>
+            <Link href="/receive" className="flex items-center space-x-2">
+              <Image
+                src="/receive.svg"
+                alt="Receive Icon"
+                width={24}
+                height={24}
+              />
+              <span>Receive</span>
+            </Link>
+            <Link href="/transaction" className="flex items-center space-x-2">
+              <Image
+                src="/transaction.svg"
+                alt="Transaction Icon"
+                width={24}
+                height={24}
+              />
+              <span>Transaction</span>
+            </Link>
+          </div>
+        </nav>
+      )}
+
+      {/* Hero Section */}
+      <main className="flex-grow flex flex-col items-center justify-center py-12">
+        <div className="text-center max-w-2xl mx-auto px-4">
+          {!user && (
+            <>
+              <h2 className="text-3xl md:text-5xl font-bold mb-6 text-gray-800">
+                Seamlessly Create Your Wallet
+              </h2>
+              <p className="text-gray-600 text-lg mb-6">
+                Use advanced authentication methods like email or passkeys to
+                securely create your wallet. Our platform ensures a seamless and
+                secure experience for all your transactions.
+              </p>
+            </>
+          )}
+
+          {/* Display Wallet Info */}
+          {!isLoading && user ? (
+            <div className="space-y-4 mt-6 w-full max-w-sm text-center">
+              <div className="bg-white p-6 rounded-lg shadow-lg">
+                <p className="text-gray-800 text-lg font-medium">
+                  Welcome, {user.name || "User"}!
+                </p>
+                <div className="mt-4">
+                  <div className="bg-gray-200 p-6 rounded-md w-full">
+                    <p className="text-gray-800">
+                      Name: {user.name || "Anonymous"}
+                    </p>
+                    <p className="text-gray-800 text-xl font-semibold mt-2">
+                      Balance: {wallet ? wallet.balance : "0"} cUSD
+                    </p>
+                  </div>
+                  <div className="mt-4 text-gray-800">
+                    <p className="mb-2">Wallet</p>
+                    {wallet ? (
+                      <p className="text-gray-800">
+                        Wallet address: {wallet.walletAddress}
+                      </p>
+                    ) : (
+                      <p>No wallets available</p>
+                    )}
+                    <button
+                      className="mt-4 w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700"
+                      onClick={() => console.log("Create wallet action")}
+                    >
+                      Create Wallet
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4 mt-6 w-full max-w-sm">
+              <Link
+                href="/api/auth/login"
+                className="auth-card flex items-center p-4 bg-white border-2 border-gray-200 rounded-lg transition hover:border-purple-600 hover:shadow-lg hover:-translate-y-1 cursor-pointer"
+              >
+                <Image
+                  src="/email.svg"
+                  alt="Email Icon"
+                  width={32}
+                  height={32}
+                  className="w-8 h-8"
+                />
+                <span className="ml-4 text-gray-800 font-medium">
+                  Wallet with Email
+                </span>
+              </Link>
+              <div className="space-y-4 mt-6 w-full max-w-sm">
+                <Link
+                  href="/passkey/" // Direct to passkeys page here
+                  className="auth-card flex items-center p-4 bg-white border-2 border-gray-200 rounded-lg transition hover:border-purple-600 hover:shadow-lg hover:-translate-y-1 cursor-pointer"
+                >
+                  <Image
+                    src="/key.svg"
+                    alt="Passkey Icon"
+                    width={32}
+                    height={32}
+                    className="w-8 h-8"
+                  />
+                  <span className="ml-4 text-gray-800 font-medium">
+                    Wallet with Passkeys
+                  </span>
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      {/* Footer */}
+      <footer className="bg-gray-800 text-white py-4">
+        <div className="container mx-auto px-4 text-center">
+          <p>&copy; 2024 WalletAuth. All rights reserved.</p>
+        </div>
       </footer>
     </div>
   );
