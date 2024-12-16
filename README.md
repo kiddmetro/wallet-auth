@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## WalletAuth
 
-## Getting Started
+WalletAuth leverages email or passkey authentication via Turnkey to create cryptocurrency wallets. The project is currently in development, with ongoing debugging to address existing issues. Email authentication is implemented, and passkey authentication will be integrated soon. Built using Next.js, TailwindCSS, and Turnkey, it employs standard modern development practices.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+# Authentication: 
+* Secure login using Auth0.
+* Integration with Turnkey for automated wallet creation.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+# Wallet Management:
+* Automatic wallet initialization for new users via Turnkey.
+* Dynamically fetch and display user wallets, supporting Ethereum-based wallets.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# Transaction Tracking:
+* View transaction history for all wallets.
+* Effortlessly transfer assets between wallets.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# User Experience:
+* Clean, modern UI with intuitive navigation.
+* Real-time wallet balance updates.
+* Seamless onboarding by combining authentication and wallet creation in one step.
 
-## Learn More
+## How to Use WalletAuth
 
-To learn more about Next.js, take a look at the following resources:
+### Prerequisites
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Before getting started with WalletAuth, ensure you have the following installed:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [Node.js](https://nodejs.org/) (v14 or higher)
+- [npm](https://www.npmjs.com/)
+- [Turnkey docs](https://t.co/u2EfqFfl6V
+- [Auth0 Account](https://auth0.com/)
 
-## Deploy on Vercel
+### Getting Started
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **Clone the repository:**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   First, clone the WalletAuth repository to your local machine:
+
+   ```bash
+   git clone https://github.com/yourusername/WalletAuth.git
+
+2. **Install dependencies:**
+    
+    Navigate into the project directory and install the necessary dependencies:
+
+    ```bash
+    cd WalletAuth
+    npm install
+
+3. **Set up environment variables:**
+    
+    Create a .env.local file in the root of the project and add the following environment variables:
+
+    ```bash
+    TURNKEY_API_PUBLIC_KEY=
+    TURNKEY_API_PRIVATE_KEY=
+    NEXT_PUBLIC_TURNKEY_API_BASE_URL=https://api.turnkey.com
+    NEXT_PUBLIC_ORGANIZATION_ID=
+
+    AUTH0_SECRET='
+    AUTH0_BASE_URL=
+    AUTH0_ISSUER_BASE_UR=
+    AUTH0_CLIENT_ID='4hI=
+    AUTH0_CLIENT_SECRET=
+   
+
+4. **Run the development server:**
+
+    Start the development server:
+
+    ```bash
+    npm run dev
+    This will start the project on http://localhost:3000. 
